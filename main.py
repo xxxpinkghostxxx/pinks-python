@@ -36,7 +36,7 @@ node_5 = [energy] + [dna_registry[251],dna_registry[251],dna_registry[251],dna_r
 node_6 = [energy] + [dna_registry[250],dna_registry[250],dna_registry[250],dna_registry[250]]
 node_7 = [energy] + [dna_registry[249],dna_registry[249],dna_registry[249],dna_registry[249]]
 node_8 = [energy] + [dna_registry[248],dna_registry[248],dna_registry[248],dna_registry[248]]
-node_9 = [energy] + [dna_registry[247],dna_registry[247],dna_registry[247],dna_registry[247]]
+node_9 = [energy] + [dna_registry[200],dna_registry[200],dna_registry[200],dna_registry[200]]
 
 
 
@@ -65,4 +65,68 @@ for cords in grid:
     right = (x+1,y)
     up = (x,y+1)
     down = (x,y-1)
-    valid_neighbors = {n for n in [left, right, up, down] if n in grid}
+    self_energy = grid[cords][0]
+    self_right = grid[cords][1]
+    self_right_type = self_right[1]
+    self_right_switch = self_right[0]
+    self_right_direction = self_right[2]
+    self_right_weight = self_right[3]
+    self_left = grid[cords][2]
+    self_left_type = self_left[1]
+    self_left_switch = self_left[0]
+    self_left_direction = self_left[2]
+    self_left_weight = self_left[3]
+    self_up = grid[cords][3]
+    self_up_type = self_up[1]
+    self_up_switch = self_up[0]
+    self_up_direction = self_up[2]
+    self_up_weight = self_up[3]
+    self_down = grid[cords][4]
+    self_down_type = self_down[1]
+    self_down_switch = self_down[0]
+    self_down_direction = self_down[2]
+    self_down_weight = self_down[3]
+    if right in grid:
+        print(f'{cords} selected is here\n{right} right is here')
+        right_node_energy = grid[right][0]
+        right_node_left_dna = grid[right][2]
+        right_node_left_type = right_node_left_dna[1]
+        right_node_left_switch = right_node_left_dna[0]
+        right_node_left_direction = right_node_left_dna[2]
+        right_node_left_weight = right_node_left_dna[3]
+        self_force = 0
+        right_force = 0
+        if self_right_type == 1:
+            self_force = self_right_weight + right_node_left_weight * self_right_direction * self_right_switch
+        elif self_right_type == 2:
+            self_force = self_right_weight - right_node_left_weight * self_right_direction * self_right_switch
+        elif self_right_type == 3:
+            self_force = max(0,self_energy - (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
+        elif self_right_type == 4:
+            energy_delta = abs(self_energy - right_node_energy)
+            self_force = (energy_delta + (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
+        if right_node_left_type == 1:
+            right_force = self_right_weight + right_node_left_weight * right_node_left_direction * right_node_left_switch
+        elif right_node_left_type == 2:
+            right_force = self_right_weight - right_node_left_weight * right_node_left_direction * right_node_left_switch
+        elif right_node_left_type == 3:
+            right_force = max(0, right_node_energy - (self_right_weight * right_node_left_weight)) * right_node_left_direction * right_node_left_switch
+        elif right_node_left_type == 4:
+            energy_delta = abs(self_energy - right_node_energy)
+            right_force = (energy_delta + (self_right_weight * right_node_left_weight)) * right_node_left_direction * right_node_left_switch
+        if abs(self_force) > abs(right_force):
+            self_energy -= self_force
+            right_node_energy += self_force
+            self_energy= max(0, min(255, self_energy))
+            right_node_energy = max(0, min(255, right_node_energy))
+            grid[cords][0] = self_energy
+            grid[right][0] = right_node_energy
+            print(self_energy, right_node_energy, self_force)
+        else:
+            self_energy += right_force
+            right_node_energy -= right_force
+            self_energy = max(0, min(255, self_energy))
+            right_node_energy = max(0, min(255, right_node_energy))
+            grid[cords][0] = self_energy
+            grid[right][0] = right_node_energy
+            print(self_energy, right_node_energy, right_force)
