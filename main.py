@@ -87,50 +87,52 @@ for cords in grid:
     self_down_direction = self_down[2]
     self_down_weight = self_down[3]
 
-    if left in grid:
-        print(f'{cords} selected is here\n{left} left is here')
-        left_node_energy = grid[left][0]
-        left_node_right_dna = grid[left][1]
-        left_node_right_type = left_node_right_dna[1]
-        left_node_right_switch = left_node_right_dna[0]
-        left_node_right_direction = left_node_right_dna[2]
-        left_node_right_weight = left_node_right_dna[3]
+    if up in grid:
+        print(f'{cords} selected is here\n{up} up is here')
+        up_node_energy = grid[up][0]
+        up_node_down_dna = grid[up][4]
+        up_node_down_type = up_node_down_dna[1]
+        up_node_down_switch = up_node_down_dna[0]
+        up_node_down_direction = up_node_down_dna[2]
+        up_node_down_weight = up_node_down_dna[3]
         self_force = 0
-        left_force = 0
-        if self_left_type == 1:
-            self_force = self_left_weight + left_node_right_weight * self_left_direction * self_left_switch
-        elif self_left_type == 2:
-            self_force = self_left_weight - left_node_right_weight * self_left_direction * self_left_switch
-        elif self_left_type == 3:
-            self_force = max(0,self_energy - (self_left_weight * left_node_right_weight)) * self_left_direction * self_left_switch
-        elif self_left_type == 4:
-            energy_delta = abs(self_energy - left_node_energy)
-            self_force = (energy_delta + (self_left_weight * left_node_right_weight)) * self_left_direction * self_left_switch
-        if left_node_right_type == 1:
-            left_force = self_left_weight + left_node_right_weight * left_node_right_direction * left_node_right_switch
-        elif left_node_right_type == 2:
-            left_force = self_left_weight - left_node_right_weight * left_node_right_direction * left_node_right_switch
-        elif left_node_right_type == 3:
-            left_force = max(0, self_left_weight - (self_right_weight * left_node_right_weight)) * left_node_right_direction * left_node_right_switch
-        elif left_node_right_type == 4:
-            energy_delta = abs(self_energy - left_node_energy)
-            left_force = (energy_delta + (self_left_weight * left_node_right_weight)) * left_node_right_direction * left_node_right_switch
-        if abs(self_force) > abs(left_force):
+        up_force = 0
+        if self_up_type == 1:
+            self_force = self_up_weight + up_node_down_weight * self_up_direction * self_up_switch
+        elif self_up_type == 2:
+            self_force = self_up_weight - up_node_down_weight * self_up_direction * self_up_switch
+        elif self_up_type == 3:
+            self_force = max(0,self_energy - (self_up_weight * up_node_down_weight)) * self_up_direction * self_up_switch
+        elif self_up_type == 4:
+            energy_delta = abs(self_energy - up_node_energy)
+            self_force = (energy_delta + (self_up_weight * up_node_down_weight)) * self_up_direction * self_up_switch
+        if up_node_down_type == 1:
+            up_force = up_node_down_weight + self_up_weight * up_node_down_direction * up_node_down_switch
+        elif up_node_down_type == 2:
+            up_force = up_node_down_weight - self_up_weight * up_node_down_direction * up_node_down_switch
+        elif up_node_down_type == 3:
+            up_force = max(0, up_node_energy - (self_up_weight * up_node_down_weight)) * up_node_down_direction * up_node_down_switch
+        elif up_node_down_type == 4:
+            energy_delta = abs(self_energy - up_node_energy)
+            up_force = (energy_delta + (up_node_down_weight * self_up_weight)) * up_node_down_direction * up_node_down_switch
+        if abs(self_force) > abs(up_force):
             self_energy -= self_force
-            left_node_energy += self_force
+            up_node_energy += self_force
             self_energy= max(0, min(255, self_energy))
-            left_node_energy = max(0, min(255, left_node_energy))
+            up_node_energy = max(0, min(255, up_node_energy))
             grid[cords][0] = self_energy
-            grid[left][0] = left_node_energy
-            print(self_energy, left_node_energy, self_force)
+            grid[up][0] = up_node_energy
+            print(self_energy, up_node_energy, self_force)
         else:
-            self_energy += left_force
-            left_node_energy -= left_force
+            self_energy += up_force
+            up_node_energy -= up_force
             self_energy = max(0, min(255, self_energy))
-            left_node_energy = max(0, min(255, left_node_energy))
+            up_node_energy = max(0, min(255, up_node_energy))
             grid[cords][0] = self_energy
-            grid[left][0] = left_node_energy
-            print(self_energy, left_node_energy, left_force)
+            grid[up][0] = up_node_energy
+            print(self_energy, up_node_energy, up_force)
+
+
 
     if right in grid:
         print(f'{cords} selected is here\n{right} right is here')
@@ -147,7 +149,7 @@ for cords in grid:
         elif self_right_type == 2:
             self_force = self_right_weight - right_node_left_weight * self_right_direction * self_right_switch
         elif self_right_type == 3:
-            self_force = max(0,self_energy - (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
+            self_force = min(0,self_energy - (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
         elif self_right_type == 4:
             energy_delta = abs(self_energy - right_node_energy)
             self_force = (energy_delta + (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
@@ -175,4 +177,7 @@ for cords in grid:
             right_node_energy = max(0, min(255, right_node_energy))
             grid[cords][0] = self_energy
             grid[right][0] = right_node_energy
-            print(self_energy, right_node_energy, right_force)
+            print(self_energy,'self energy', right_node_energy,'right node energy', right_force, 'right force')
+    if self_energy == 0:
+        print(f'{cords} selected is here and died')
+        del grid[cords]
