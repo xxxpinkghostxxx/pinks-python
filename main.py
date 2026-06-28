@@ -86,6 +86,52 @@ for cords in grid:
     self_down_switch = self_down[0]
     self_down_direction = self_down[2]
     self_down_weight = self_down[3]
+
+    if left in grid:
+        print(f'{cords} selected is here\n{left} left is here')
+        left_node_energy = grid[left][0]
+        left_node_right_dna = grid[left][1]
+        left_node_right_type = left_node_right_dna[1]
+        left_node_right_switch = left_node_right_dna[0]
+        left_node_right_direction = left_node_right_dna[2]
+        left_node_right_weight = left_node_right_dna[3]
+        self_force = 0
+        left_force = 0
+        if self_left_type == 1:
+            self_force = self_left_weight + left_node_right_weight * self_left_direction * self_left_switch
+        elif self_left_type == 2:
+            self_force = self_left_weight - left_node_right_weight * self_left_direction * self_left_switch
+        elif self_left_type == 3:
+            self_force = max(0,self_energy - (self_left_weight * left_node_right_weight)) * self_left_direction * self_left_switch
+        elif self_left_type == 4:
+            energy_delta = abs(self_energy - left_node_energy)
+            self_force = (energy_delta + (self_left_weight * left_node_right_weight)) * self_left_direction * self_left_switch
+        if left_node_right_type == 1:
+            left_force = self_left_weight + left_node_right_weight * left_node_right_direction * left_node_right_switch
+        elif left_node_right_type == 2:
+            left_force = self_left_weight - left_node_right_weight * left_node_right_direction * left_node_right_switch
+        elif left_node_right_type == 3:
+            left_force = max(0, self_left_weight - (self_right_weight * left_node_right_weight)) * left_node_right_direction * left_node_right_switch
+        elif left_node_right_type == 4:
+            energy_delta = abs(self_energy - left_node_energy)
+            left_force = (energy_delta + (self_left_weight * left_node_right_weight)) * left_node_right_direction * left_node_right_switch
+        if abs(self_force) > abs(left_force):
+            self_energy -= self_force
+            left_node_energy += self_force
+            self_energy= max(0, min(255, self_energy))
+            left_node_energy = max(0, min(255, left_node_energy))
+            grid[cords][0] = self_energy
+            grid[left][0] = left_node_energy
+            print(self_energy, left_node_energy, self_force)
+        else:
+            self_energy += left_force
+            left_node_energy -= left_force
+            self_energy = max(0, min(255, self_energy))
+            left_node_energy = max(0, min(255, left_node_energy))
+            grid[cords][0] = self_energy
+            grid[left][0] = left_node_energy
+            print(self_energy, left_node_energy, left_force)
+
     if right in grid:
         print(f'{cords} selected is here\n{right} right is here')
         right_node_energy = grid[right][0]
