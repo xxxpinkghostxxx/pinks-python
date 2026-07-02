@@ -1,8 +1,6 @@
 import random
-import math
-from turtle import goto
 energy = random.randint(0, 255)
-rand_int = random.randint(0, 255)
+
 
 def dna_construct(n):
     if not isinstance(n, int):
@@ -25,17 +23,16 @@ for n in range(0, 256):
 print(dna_construct(1))
 print(dna_registry[1])
 grid = {}
-node_1 = [energy] + [dna_registry[rand_int],dna_registry[255],dna_registry[255],dna_registry[255]]
-node_2 = [energy] + [dna_registry[rand_int],dna_registry[254],dna_registry[254],dna_registry[254]]
-node_3 = [energy] + [dna_registry[rand_int],dna_registry[253],dna_registry[253],dna_registry[253]]
-node_4 = [energy] + [dna_registry[rand_int],dna_registry[252],dna_registry[252],dna_registry[252]]
-node_5 = [energy] + [dna_registry[rand_int],dna_registry[251],dna_registry[251],dna_registry[251]]
-node_6 = [energy] + [dna_registry[rand_int],dna_registry[250],dna_registry[250],dna_registry[250]]
-node_7 = [energy] + [dna_registry[rand_int],dna_registry[249],dna_registry[249],dna_registry[249]]
-node_8 = [energy] + [dna_registry[rand_int],dna_registry[248],dna_registry[248],dna_registry[248]]
-node_9 = [energy] + [dna_registry[rand_int],dna_registry[247],dna_registry[247],dna_registry[247]]
-node_10 = [energy] + [dna_registry[rand_int],dna_registry[rand_int],dna_registry[rand_int],dna_registry[rand_int]]
-
+node_1 = [energy] + [dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
+node_2 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[254],dna_registry[254],dna_registry[254]]
+node_3 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[253],dna_registry[253],dna_registry[253]]
+node_4 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[252],dna_registry[252],dna_registry[252]]
+node_5 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[251],dna_registry[251],dna_registry[251]]
+node_6 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[250],dna_registry[250],dna_registry[250]]
+node_7 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[249],dna_registry[249],dna_registry[249]]
+node_8 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[248],dna_registry[248],dna_registry[248]]
+node_9 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[247],dna_registry[247],dna_registry[247]]
+node_10 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)]]
 
 
 
@@ -114,7 +111,7 @@ while True:
                 up_node_energy = max(0, min(255, up_node_energy))
                 grid[cords][0] = self_energy
                 grid[up][0] = up_node_energy
-                print(self_energy, up_node_energy, self_force)
+                print(self_energy,'self force', up_node_energy,'up node energy', self_force,'self force')
             else:
                 self_energy += up_force
                 up_node_energy -= up_force
@@ -122,7 +119,7 @@ while True:
                 up_node_energy = max(0, min(255, up_node_energy))
                 grid[cords][0] = self_energy
                 grid[up][0] = up_node_energy
-                print(self_energy, up_node_energy, up_force)
+                print(self_energy,'self energy', up_node_energy,'up node energy', up_force,' up force')
 
 
 
@@ -141,19 +138,19 @@ while True:
             elif self_right_type == 2:
                 self_force = self_right_weight - right_node_left_weight * self_right_direction * self_right_switch
             elif self_right_type == 3:
-                self_force = min(0,self_energy - (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
+                self_force = max(0,self_energy - (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
             elif self_right_type == 4:
                 energy_delta = abs(self_energy - right_node_energy)
                 self_force = (energy_delta + (self_right_weight * right_node_left_weight)) * self_right_direction * self_right_switch
             if right_node_left_type == 1:
-                right_force = self_right_weight + right_node_left_weight * right_node_left_direction * right_node_left_switch
+                right_force = right_node_left_weight + self_right_weight * right_node_left_direction * right_node_left_switch
             elif right_node_left_type == 2:
-                right_force = self_right_weight - right_node_left_weight * right_node_left_direction * right_node_left_switch
+                right_force = right_node_left_weight - self_right_weight * right_node_left_direction * right_node_left_switch
             elif right_node_left_type == 3:
-                right_force = max(0, right_node_energy - (self_right_weight * right_node_left_weight)) * right_node_left_direction * right_node_left_switch
+                right_force = max(0, right_node_energy - (right_node_left_weight * self_right_weight)) * right_node_left_direction * right_node_left_switch
             elif right_node_left_type == 4:
                 energy_delta = abs(self_energy - right_node_energy)
-                right_force = (energy_delta + (self_right_weight * right_node_left_weight)) * right_node_left_direction * right_node_left_switch
+                right_force = (energy_delta + (right_node_left_weight * self_right_weight)) * right_node_left_direction * right_node_left_switch
             if abs(self_force) > abs(right_force):
                 self_energy -= self_force
                 right_node_energy += self_force
@@ -161,7 +158,7 @@ while True:
                 right_node_energy = max(0, min(255, right_node_energy))
                 grid[cords][0] = self_energy
                 grid[right][0] = right_node_energy
-                print(self_energy, right_node_energy, self_force)
+                print(self_energy,'self_energy',right_node_energy,'right node energy' , self_force, 'self force')
             else:
                 self_energy += right_force
                 right_node_energy -= right_force
@@ -174,13 +171,12 @@ while True:
 ## heres the death mechanic since the energy in the node cords is 0 it just dies so bye bye
 
     for cords, dna in list(grid.items()):
-        if 0 in [0] in dna:
+        if dna[0] <= 0:
             grid.pop(cords)
     average_energy = 0
     for cords in grid:
         average_energy += grid[cords][0]
     average_energy /= len(grid)
-    iter(grid)
     spawn_cost = average_energy / 1.8
     spawn_cost = int(spawn_cost)
     initial_energy = spawn_cost / 2
@@ -193,7 +189,7 @@ while True:
             x = cords[0]
             y = cords[1]
             for dx, dy in spawning_directions:
-                neighbors = (max(255, abs(x + dx)),max(255, abs(y + dy)))
+                neighbors = (min(255, abs(x + dx)),min(255, abs(y + dy)))
                 if neighbors not in grid:
                     parent = grid[cords]
                     parent_energy = parent[0]
@@ -217,5 +213,10 @@ while True:
                     break
 
     grid.update(temp_grid)
+    if (0,0) in grid:
+        grid[(0,0)][0] += 10
+        grid[(0,0)][0] = min(255, max(0, grid[(0,0)][0]))
+    else:
+        grid[(0,0)] = [random.randint(0,255),dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
+
     print(grid)
-    print(temp_grid)
