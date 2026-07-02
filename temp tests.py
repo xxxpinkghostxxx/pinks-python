@@ -43,6 +43,16 @@ node_9 = [energy] + [dna_registry[247],dna_registry[247],dna_registry[247],dna_r
 
 
 
+my_dict = {'a': [1, 2], 'b': [3, 4], 'c': [2, 5]}
+target_value = 2
+
+# Iterate over a copy of the items to safely modify the dictionary while looping
+for key, value in list(my_dict.items()):
+    if target_value in value:
+        popped_value = my_dict.pop(key)
+        print(f"Popped {key}: {popped_value}")
+
+print(my_dict)  # Output: {'b': [3, 4]}
 
 
 
