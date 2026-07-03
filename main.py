@@ -23,41 +23,30 @@ for n in range(0, 256):
 print(dna_construct(1))
 print(dna_registry[1])
 grid = {}
-node_1 = [energy] + [dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
-node_2 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[254],dna_registry[254],dna_registry[254]]
-node_3 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[253],dna_registry[253],dna_registry[253]]
-node_4 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[252],dna_registry[252],dna_registry[252]]
-node_5 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[251],dna_registry[251],dna_registry[251]]
-node_6 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[250],dna_registry[250],dna_registry[250]]
-node_7 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[249],dna_registry[249],dna_registry[249]]
-node_8 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[248],dna_registry[248],dna_registry[248]]
-node_9 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[247],dna_registry[247],dna_registry[247]]
-node_10 = [energy] + [dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)]]
 
 
 
 
 
-grid is dict
-grid[(0, 0)] = node_1
-grid[(1, 0)] = node_2
-grid[(0,1)] = node_3
-grid[(1,1)] = node_4
-grid[(0,2)] = node_5
-grid[(1,2)] = node_6
-grid[(2,0)] = node_7
-grid[(2,1)] = node_8
-grid[(2,2)] = node_9
-grid[(3,0)] = node_10
+## grid is a dict the keys are a integer cooridinate system
 
 
 
-
-if grid is None:
-    print('no grid')
+run = True
 
 ## first battle loop
-while True:
+while run == True:
+    if (0,0) in grid:
+        grid[(0,0)][0] += 5
+        grid[(0,0)][0] = min(255, max(0, grid[(0,0)][0]))
+    else:
+        grid[(0,0)] = [255] + [dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
+    if (255,255) in grid:
+        grid[(255,255)][0] += 1
+        grid[(255,255)][0] = min(255, max(0,grid[(255,255)][0]))
+    else:
+        grid[(255,255)] = [1] + [dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
+
     for cords in grid:
         x = cords[0]
         y = cords[1]
@@ -177,6 +166,7 @@ while True:
     for cords in grid:
         average_energy += grid[cords][0]
     average_energy /= len(grid)
+    average_energy = int(average_energy)
     spawn_cost = average_energy / 1.8
     spawn_cost = int(spawn_cost)
     initial_energy = spawn_cost / 2
@@ -213,10 +203,9 @@ while True:
                     break
 
     grid.update(temp_grid)
-    if (0,0) in grid:
-        grid[(0,0)][0] += 10
-        grid[(0,0)][0] = min(255, max(0, grid[(0,0)][0]))
-    else:
-        grid[(0,0)] = [random.randint(0,255),dna_registry[255],dna_registry[255],dna_registry[255],dna_registry[255]]
-
-    print(grid)
+    temp_grid.clear()
+    if len(grid) == (255 * 255):
+        run = False
+print(grid)
+print(len(grid))
+print('this is the equilibrium point')
