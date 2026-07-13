@@ -1,12 +1,16 @@
 import random
+import PIL
+from PIL import ImageGrab
+
+
 energy = random.randint(0, 255)
 
-
+screen = ImageGrab.grab()
+screen = screen.convert('L')
+print(screen)
 def dna_construct(n):
-    if not isinstance(n, int):
-        return []
-    if n < 0 or n > 255:
-        return []
+    if not isinstance(n, int): return
+    if n < 0 or n > 255: return
     toggle = n // 128
     action = ((n % 128) // 32) + 1
     modality = 2 * ((n % 32) // 16) - 1
@@ -15,7 +19,9 @@ def dna_construct(n):
 
 
 
+
 dna_registry = {}
+
 
 for n in range(0, 256):
     dna_registry[n] = dna_construct(n)
@@ -71,19 +77,14 @@ run = True
 
 ## first battle loop
 while run is True:
-    if (0,0,0) in grid:
-        grid[(0,0,0)][0] += 5
-        grid[(0,0,0)][0] = min(255, max(0, grid[(0,0,0)][0]))
-    else:
-        grid[(0,0,0)] = [255] + [dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)]]
-    if (255,255,255) in grid:
-        grid[(255,255,255)][0] += 1
-        grid[(255,255,255)][0] = min(255, max(0,grid[(255,255,255)][0]))
-    else:
-        grid[(255,255,255)] = [1] + [dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)],dna_registry[random.randint(0,255)]]
-
-
-
+    if (0,0,0) not in grid:
+        grid[(0, 0, 0)] = [255] + [dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)],
+                                   dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)],
+                                   dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)]]
+    if (255,255,255) not in grid:
+        grid[(255,255,255)] =  [255] + [dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)],
+                                   dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)],
+                                   dna_registry[random.randint(0, 255)], dna_registry[random.randint(0, 255)]]
     for cords in grid:
         x = cords[0]
         y = cords[1]
@@ -179,7 +180,7 @@ while run is True:
             y = cords[1]
             z = cords[2]
             for dx, dy, dz in spawning_directions:
-                neighbors = (min(255, abs(x + dx)),min(255, abs(y + dy)),min(255, abs(z + dz)))
+                neighbors = abs(x + dx), abs(y + dy), abs(z + dz)
                 if neighbors not in grid and neighbors not in temp_grid:
                     parent = grid[cords]
                     parent_energy = parent[0]
@@ -193,20 +194,30 @@ while run is True:
                         weight = dna[3]
                         mod_bit = 1 if modality == 1 else 0
                         dna_int = (toggle * 128) + ((action - 1) * 32) + (mod_bit * 16) + (weight - 1)
-                        dna_variance = round(dna_int * (1 + random.uniform(-.10, .10)))
-                        dna_variance = int(dna_variance)
+                        dna_variance = dna_int * (1 + random.uniform(-.10, .10))
                         dna_variance = max(0, min(255, dna_variance))
+                        dna_variance = int(dna_variance)
 
 
                         spawned_dna.append(dna_construct(dna_variance))
-                    temp_grid[neighbors] = spawned_dna
+                    temp_grid[(neighbors)] = spawned_dna
                     break
+    screen_inf = ImageGrab.grab()
+    screen_inf = screen_inf.convert('L')
+    pixels = screen_inf.load()
+    for x in range(screen_inf.width):
+        for y in range(screen_inf.height):
+            if (x,y,0) in grid:
+                energy = grid[((x,y,0))][0]
+                pixel_val = max(0, (pixels[x,y] - energy))
+                grid[(x,y,0)][0] += pixel_val
+
 
     grid.update(temp_grid)
     temp_grid.clear()
     print(len(grid))
-    if len(grid) >= 256 * 256 * 256:
-        run = False
+
+
 print(grid)
 print(len(grid))
 print('this is the equilibrium point')
