@@ -1,5 +1,7 @@
+from json import load
 import random
 import PIL
+import numpy as np
 from PIL import ImageGrab
 
 
@@ -32,6 +34,8 @@ grid = {}
 
 
 
+
+
 def force_calc(self_energy, target_energy, self_dna, target_dna):
     self_type = self_dna[1]
     self_toggle = self_dna[0]
@@ -43,7 +47,7 @@ def force_calc(self_energy, target_energy, self_dna, target_dna):
     target_weight = target_dna[3]
     self_force = 0
     target_force = 0
-
+    energy_delta  = np.abs(self_energy - target_energy)
     if self_type == 1: ## push
         self_force = (self_weight + target_weight * self_direction) * self_toggle
     elif self_type == 2: ## pull
@@ -62,6 +66,8 @@ def force_calc(self_energy, target_energy, self_dna, target_dna):
     elif target_type == 4:
         energy_delta = abs(target_energy - self_energy)
         target_force = (max(0,(energy_delta * (target_weight * self_weight - 1 )/ 255)) * target_direction) * target_toggle
+    int(self_force)
+    int(target_force)
     return self_force, target_force
 
 
@@ -180,7 +186,7 @@ while run is True:
             y = cords[1]
             z = cords[2]
             for dx, dy, dz in spawning_directions:
-                neighbors = abs(x + dx), abs(y + dy), abs(z + dz)
+                neighbors = min(2000, abs(x + dx)), min(2000, abs(y + dy)), min(10, abs(z + dz))
                 if neighbors not in grid and neighbors not in temp_grid:
                     parent = grid[cords]
                     parent_energy = parent[0]
@@ -202,15 +208,16 @@ while run is True:
                         spawned_dna.append(dna_construct(dna_variance))
                     temp_grid[(neighbors)] = spawned_dna
                     break
+
     screen_inf = ImageGrab.grab()
     screen_inf = screen_inf.convert('L')
     pixels = screen_inf.load()
-    for x in range(screen_inf.width):
-        for y in range(screen_inf.height):
-            if (x,y,0) in grid:
-                energy = grid[((x,y,0))][0]
-                pixel_val = max(0, (pixels[x,y] - energy))
-                grid[(x,y,0)][0] += pixel_val
+    for cords in list(grid.keys()):
+        x,y,z = cords
+        if z == 0 and x <= screen_inf.width and y <= screen_inf.height:
+            energy = grid[cords][0]
+            pixel_val = pixels[x, y]
+            grid[cords][0] = int(max(energy, pixel_val))
 
 
     grid.update(temp_grid)
